@@ -2,6 +2,9 @@
     "[css]": {
         "editor.defaultFormatter": "esbenp.prettier-vscode"
     },
+    "[html]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
     "[javascript]": {
         "editor.defaultFormatter": "esbenp.prettier-vscode"
     },
@@ -70,6 +73,7 @@
         "source.organizeImports.ruff": "explicit",
         "source.removeUnusedImports": "explicit"
     },
+    "editor.copyWithSyntaxHighlighting": false,
     "editor.detectIndentation": true,
     "editor.fontFamily": "CaskaydiaCove Nerd Font Mono, Menlo, Monaco, 'Courier New', monospace",
     "editor.fontLigatures": true,
@@ -107,6 +111,7 @@
         "switch:command",
         "branch-create:command"
     ],
+    "gitlens.telemetry.enabled": false,
     "gitlens.views.branches.branches.layout": "list",
     "javascript.updateImportsOnFileMove.enabled": "always",
     "liveServer.settings.donotShowInfoMsg": true,
@@ -116,7 +121,7 @@
     "prettier.singleQuote": false,
     "prettier.tabWidth": 4,
     "prettier.trailingComma": "all",
-    "projectManager.git.baseFolders": ["", "D:\\Desktop\\Stuff"],
+    "projectManager.git.baseFolders": ["D:\\Desktop\\Stuff"],
     "projectManager.git.ignoredFolders": [
         "node_modules",
         "out",
@@ -125,8 +130,9 @@
         ".haxelib",
         ".oh-my-zsh"
     ],
+    "projectManager.git.maxDepthRecursion": 1,
     "projectManager.sortList": "Recent",
-    "pylint.args": ["--disable=C0114,C0103,C0116,W0603,C0301,W0719,C0115"],
+    "pylint.args": ["--disable=C0114,C0103,C0116,W0603,C0301,W0719,C0115,W0718"],
     "python.analysis.autoFormatStrings": true,
     "python.analysis.autoImportCompletions": true,
     "python.analysis.completeFunctionParens": true,
@@ -140,6 +146,8 @@
     "python.analysis.typeEvaluation.strictListInference": true,
     "python.analysis.typeEvaluation.strictSetInference": true,
     "redhat.telemetry.enabled": false,
+    "rest-client.enableTelemetry": false,
+    "telemetry.editStats.enabled": false,
     "telemetry.feedback.enabled": false,
     "terminal.integrated.defaultProfile.windows": "Git Bash",
     "terminal.integrated.enableMultiLinePasteWarning": "never",
