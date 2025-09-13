@@ -130,7 +130,7 @@
         ".haxelib",
         ".oh-my-zsh"
     ],
-    "projectManager.git.maxDepthRecursion": 1,
+    "projectManager.git.maxDepthRecursion": 3,
     "projectManager.sortList": "Recent",
     "pylint.args": ["--disable=C0114,C0103,C0116,W0603,C0301,W0719,C0115,W0718"],
     "python.analysis.autoFormatStrings": true,
@@ -152,7 +152,7 @@
     "terminal.integrated.defaultProfile.windows": "Git Bash",
     "terminal.integrated.enableMultiLinePasteWarning": "never",
     "terminal.integrated.scrollback": 10000,
-    "terminal.integrated.suggest.enabled": true,
+    // "terminal.integrated.suggest.enabled": true,
     "typescript.implementationsCodeLens.enabled": true,
     "typescript.inlayHints.variableTypes.suppressWhenTypeMatchesName": false,
     "typescript.preferences.importModuleSpecifier": "project-relative",
