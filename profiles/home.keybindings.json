@@ -1,0 +1,117 @@
+[
+    {
+        "command": "renameFile",
+        "key": "enter",
+        "when": "filesExplorerFocus && foldersViewVisible && !explorerResourceIsRoot && !explorerResourceReadonly && !inputFocus"
+    },
+    {
+        "command": "-cursorDownSelect",
+        "key": "ctrl+shift+down",
+        "when": "textInputFocus"
+    },
+    {
+        "command": "-cursorUpSelect",
+        "key": "ctrl+shift+up",
+        "when": "textInputFocus"
+    },
+    {
+        "command": "-cursorWordLeftSelect",
+        "key": "ctrl+shift+left",
+        "when": "textInputFocus && !accessibilityModeEnabled"
+    },
+    {
+        "command": "cursorWordLeft",
+        "key": "alt+left",
+        "when": "textInputFocus && !accessibilityModeEnabled"
+    },
+    {
+        "command": "-cursorWordLeft",
+        "key": "ctrl+left",
+        "when": "textInputFocus && !accessibilityModeEnabled"
+    },
+    {
+        "command": "cursorWordLeftSelect",
+        "key": "shift+alt+left",
+        "when": "textInputFocus && !accessibilityModeEnabled"
+    },
+    {
+        "command": "-editor.action.smartSelect.shrink",
+        "key": "shift+alt+left",
+        "when": "editorTextFocus"
+    },
+    {
+        "command": "cursorLineStart",
+        "key": "ctrl+left",
+        "when": "textInputFocus && !accessibilityModeEnabled"
+    },
+    {
+        "command": "cursorLineStartSelect",
+        "key": "ctrl+shift+left",
+        "when": "textInputFocus && !accessibilityModeEnabled"
+    },
+    {
+        "command": "-cursorWordRightSelect",
+        "key": "ctrl+shift+right",
+        "when": "textInputFocus && !accessibilityModeEnabled"
+    },
+    {
+        "command": "cursorWordRight",
+        "key": "alt+right",
+        "when": "textInputFocus && !accessibilityModeEnabled"
+    },
+    {
+        "command": "-cursorWordRight",
+        "key": "ctrl+right",
+        "when": "textInputFocus && !accessibilityModeEnabled"
+    },
+    {
+        "command": "cursorWordRightSelect",
+        "key": "shift+alt+right",
+        "when": "textInputFocus && !accessibilityModeEnabled"
+    },
+    {
+        "command": "-editor.action.smartSelect.grow",
+        "key": "shift+alt+right",
+        "when": "editorTextFocus"
+    },
+    {
+        "command": "cursorLineEnd",
+        "key": "ctrl+right",
+        "when": "textInputFocus && !accessibilityModeEnabled"
+    },
+    {
+        "command": "cursorLineEndSelect",
+        "key": "ctrl+shift+right",
+        "when": "textInputFocus && !accessibilityModeEnabled"
+    },
+    {
+        "command": "cursorPageDown",
+        "key": "ctrl+down",
+        "when": "textInputFocus"
+    },
+    {
+        "command": "cursorPageDownSelect",
+        "key": "ctrl+shift+down",
+        "when": "textInputFocus"
+    },
+    {
+        "command": "cursorPageUp",
+        "key": "ctrl+up",
+        "when": "textInputFocus"
+    },
+    {
+        "command": "cursorPageUpSelect",
+        "key": "ctrl+shift+up",
+        "when": "textInputFocus"
+    },
+    {
+        "command": "-scrollLineDown",
+        "key": "ctrl+down",
+        "when": "textInputFocus"
+    },
+    {
+        "command": "-scrollLineUp",
+        "key": "ctrl+up",
+        "when": "textInputFocus"
+    }
+]

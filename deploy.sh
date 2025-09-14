@@ -11,11 +11,6 @@ touch "$secrets_file"
 # shellcheck source=./secrets.env
 . "$secrets_file"
 
-if [[ -z $profile || ! -f "$script_dir/profiles/$profile.json" ]]; then
-    echo "Invalid profile: $profile" >&2
-    exit 1
-fi
-
 if [[ "$OSTYPE" == "cygwin" || "$OSTYPE" == "msys" ]]; then
     os="win"
 elif [[ "$OSTYPE" == "darwin"* ]]; then
@@ -43,17 +38,23 @@ linux)
     ;;
 esac
 
-# TODO: Potentially handle shortcuts & others?
+file_names=("settings.json" "keybindings.json")
 
-file_name="settings.json"
-target_file="$target_dir/$file_name"
+for file_name in "${file_names[@]}"; do
+    target_file="$target_dir/$file_name"
 
-profile_json=$(
-    jq -n \
-        --arg JIRA_PROJECT_KEY "$JIRA_PROJECT_KEY" \
-        --arg JIRA_SITE_ID "$JIRA_SITE_ID" \
-        -f "$script_dir/profiles/$profile.json"
-)
+    echo "Updating VS Code $file_name: $target_file"
 
-echo "Updating VS Code settings file: $target_file"
-jq --argjson profile "$profile_json" '. + $profile' "$script_dir/$file_name" >"$target_file"
+    if [[ -f "$script_dir/profiles/$profile.$file_name" ]]; then
+        profile_json=$(
+            jq -n \
+                --arg JIRA_PROJECT_KEY "$JIRA_PROJECT_KEY" \
+                --arg JIRA_SITE_ID "$JIRA_SITE_ID" \
+                -f "$script_dir/profiles/$profile.$file_name"
+        )
+
+        jq --argjson profile "$profile_json" '. + $profile' "$script_dir/$file_name" >"$target_file"
+    else
+        jq -fn "$script_dir/$file_name" >"$target_file"
+    fi
+done
