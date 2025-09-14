@@ -69,7 +69,39 @@ extension_diff=$(diff -c <(echo "${extensions[@]}" | tr ' ' '\n' | sort -u) <(co
 
 if [[ -n $extension_diff ]]; then
     echo -e "\nExtension mismatch found:"
-    echo "$extension_diff" | grep "^[+-\!] "
+
+    changed_extensions=$(echo "$extension_diff" | grep "^\!.*@" | cut -c3-)
+    added_extensions=$(echo "$extension_diff" | grep "^+.*@" | cut -c3- | sed 's/^/    /')
+    missing_extensions=$(echo "$extension_diff" | grep "^-.*@" | cut -c3- | sed 's/^/    /')
+
+    if [[ -n $changed_extensions ]]; then
+        echo -e "\n  Extensions changed in VS Code:"
+        echo -e "    Expected:"
+
+        while IFS=$'\n' read -r extension; do
+            if [[ ${extensions[*]} =~ $extension ]]; then
+                echo "      $extension"
+            fi
+        done <<<"$changed_extensions"
+
+        echo -e "    Found:"
+
+        while IFS=$'\n' read -r extension; do
+            if ! [[ ${extensions[*]} =~ $extension ]]; then
+                echo "      $extension"
+            fi
+        done <<<"$changed_extensions"
+    fi
+
+    if [[ -n $added_extensions ]]; then
+        echo -e "\n  Extensions added to VS Code:"
+        echo "$added_extensions"
+    fi
+
+    if [[ -n $missing_extensions ]]; then
+        echo -e "\n  Extensions missing in VS Code:"
+        echo "$missing_extensions"
+    fi
 else
     echo -e "\nAll Extensions matched"
 fi
