@@ -1,0 +1,152 @@
+{
+    "atlascode.jira.lastCreateSiteAndProject": {
+        "projectKey": "\($JIRA_PROJECT_KEY)",
+        "siteId": "\($JIRA_SITE_ID)"
+    },
+    "cSpell.userWords": [
+        "APIKEY",
+        "atogateway",
+        "aurion",
+        "aurioninternal",
+        "cashout",
+        "cleanup",
+        "cloudfontkvs",
+        "costprofile",
+        "crowdstrike",
+        "Debouncer",
+        "DTOs",
+        "dynamodbstreams",
+        "endswith",
+        "FAIRWORK",
+        "fastq",
+        "FUSIONAUTH",
+        "globalconfig",
+        "IDPGSI",
+        "IIFE",
+        "incl",
+        "interservice",
+        "keyvaluestore",
+        "KSUID",
+        "mailpit",
+        "Mockdate",
+        "MPAS",
+        "nonstrict",
+        "NTCAS",
+        "openapi",
+        "Passthrough",
+        "PAYG",
+        "Payrun",
+        "PILON",
+        "Pino",
+        "PITR",
+        "Popover",
+        "premade",
+        "PROJROOT",
+        "psql",
+        "pycache",
+        "Rata",
+        "statemachine",
+        "stepfunctions",
+        "stsl",
+        "TENANTALIAS",
+        "tenantconfig",
+        "TENANTLOOKUP",
+        "testid",
+        "tfvars",
+        "thingo",
+        "Timeframe",
+        "Timeframes",
+        "tsoa",
+        "tzdata",
+        "uuidgen",
+        "Vars"
+    ],
+    "database-client.telemetry.usesOnlineServices": false,
+    "launch": {
+        "compounds": [],
+        "configurations": [
+            {
+                "name": "Tenant Config Service",
+                "port": 9235,
+                "request": "attach",
+                "restart": true,
+                "type": "node"
+            },
+            {
+                "name": "Global Config Service",
+                "port": 9230,
+                "request": "attach",
+                "restart": true,
+                "type": "node"
+            },
+            {
+                "name": "Organisation Service",
+                "port": 9231,
+                "request": "attach",
+                "restart": true,
+                "type": "node"
+            },
+            {
+                "name": "Leave Service",
+                "port": 9236,
+                "request": "attach",
+                "restart": true,
+                "type": "node"
+            },
+            {
+                "name": "Payroll Service",
+                "port": 9232,
+                "request": "attach",
+                "restart": true,
+                "type": "node"
+            },
+            {
+                "name": "Superannuation Service",
+                "port": 9233,
+                "request": "attach",
+                "restart": true,
+                "type": "node"
+            },
+            {
+                "name": "Tax Service",
+                "port": 9234,
+                "request": "attach",
+                "restart": true,
+                "type": "node"
+            },
+            {
+                "name": "Migration Service",
+                "port": 9237,
+                "request": "attach",
+                "restart": true,
+                "type": "node"
+            },
+            {
+                "name": "Auth Service",
+                "port": 9229,
+                "request": "attach",
+                "restart": true,
+                "type": "node"
+            },
+            {
+                "name": "Notification Service",
+                "port": 9239,
+                "request": "attach",
+                "restart": true,
+                "type": "node"
+            }
+        ]
+    },
+    "prettier.singleQuote": true,
+    "projectManager.git.baseFolders": ["~/Repos"],
+    "projectManager.git.maxDepthRecursion": 1,
+    "python.analysis.typeCheckingMode": "standard",
+    "vs-kubernetes": {
+        "vscode-kubernetes.helm-path-mac": "/Users/thomassloman/.vs-kubernetes/tools/helm/darwin-arm64/helm",
+        "vscode-kubernetes.kubectl-path-mac": "/Users/thomassloman/.vs-kubernetes/tools/kubectl/kubectl",
+        "vscode-kubernetes.minikube-path-mac": "/Users/thomassloman/.vs-kubernetes/tools/minikube/darwin-arm64/minikube"
+    },
+    "yaml.schemas": {
+        "file:///Users/thomassloman/.vscode/extensions/atlassian.atlascode-3.8.15/resources/schemas/pipelines-schema.json": "bitbucket-pipelines.yml"
+    }
+}
