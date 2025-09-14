@@ -18,7 +18,7 @@ elif [[ "$OSTYPE" == "darwin"* ]]; then
 elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
     os="linux"
 else
-    echo "Unknown OS detected: $OSTYPE" >&2
+    echo -e "\nUnknown OS detected: $OSTYPE" >&2
     exit 1
 fi
 
@@ -33,7 +33,7 @@ linux)
     target_dir="$HOME/.config/Code/User"
     ;;
 *)
-    echo "Unimplemented OS target: $os" >&2
+    echo -e "\nUnimplemented OS target: $os" >&2
     exit 1
     ;;
 esac
@@ -43,9 +43,9 @@ file_names=("settings.json" "keybindings.json")
 for file_name in "${file_names[@]}"; do
     target_file="$target_dir/$file_name"
 
-    echo "Updating VS Code $file_name: $target_file"
+    echo -e "\nUpdating VS Code $file_name: $target_file"
 
-    if [[ -f "$script_dir/profiles/$profile.$file_name" ]]; then
+    if [ -f "$script_dir/profiles/$profile.$file_name" ]; then
         profile_json=$(
             jq -n \
                 --arg JIRA_PROJECT_KEY "$JIRA_PROJECT_KEY" \
@@ -58,3 +58,18 @@ for file_name in "${file_names[@]}"; do
         jq -fn "$script_dir/$file_name" >"$target_file"
     fi
 done
+
+readarray -t extensions <"$script_dir/extensions.txt"
+
+if [ -f "$script_dir/profiles/$profile.extensions.txt" ]; then
+    readarray -t -O "${#extensions[@]}" extensions <"$script_dir/profiles/$profile.extensions.txt"
+fi
+
+extension_diff=$(diff -c <(echo "${extensions[@]}" | tr ' ' '\n' | sort -u) <(code --list-extensions --show-versions | sort) || :)
+
+if [[ -n $extension_diff ]]; then
+    echo -e "\nExtension mismatch found:"
+    echo "$extension_diff" | grep "^[+-\!] "
+else
+    echo -e "\nAll Extensions matched"
+fi
