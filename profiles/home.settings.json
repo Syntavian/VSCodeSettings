@@ -1,8 +1,0 @@
-{
-    "cSpell.userWords": ["Syntavian"],
-    "prettier.singleQuote": false,
-    "projectManager.git.baseFolders": ["D:\\Desktop\\Stuff"],
-    "projectManager.git.maxDepthRecursion": 3,
-    "python.analysis.typeCheckingMode": "strict",
-    "terminal.integrated.defaultProfile.windows": "Git Bash"
-}

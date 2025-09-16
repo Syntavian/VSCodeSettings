@@ -1,0 +1,218 @@
+{
+    "settings": {
+        "[css]": {
+            "editor.defaultFormatter": "esbenp.prettier-vscode"
+        },
+        "[html]": {
+            "editor.defaultFormatter": "esbenp.prettier-vscode"
+        },
+        "[javascript]": {
+            "editor.defaultFormatter": "esbenp.prettier-vscode"
+        },
+        "[javascriptreact]": {
+            "editor.defaultFormatter": "esbenp.prettier-vscode"
+        },
+        "[json]": {
+            "editor.defaultFormatter": "esbenp.prettier-vscode"
+        },
+        "[jsonc]": {
+            "editor.defaultFormatter": "esbenp.prettier-vscode"
+        },
+        "[markdown]": {
+            "editor.defaultFormatter": "DavidAnson.vscode-markdownlint",
+            "editor.wordWrap": "bounded",
+            "editor.wordWrapColumn": 100
+        },
+        "[python]": {
+            "editor.defaultFormatter": "charliermarsh.ruff"
+        },
+        "[shellscript]": {
+            "editor.defaultFormatter": "foxundermoon.shell-format"
+        },
+        "[terraform]": {
+            "editor.stickyScroll.enabled": true
+        },
+        "[typescript]": {
+            "editor.codeActionsOnSave": {
+                "source.organizeImports": "never"
+            },
+            "editor.defaultFormatter": "esbenp.prettier-vscode"
+        },
+        "[typescriptreact]": {
+            "editor.defaultFormatter": "esbenp.prettier-vscode"
+        },
+        "chat.agent.enabled": false,
+        "chat.commandCenter.enabled": false,
+        "chat.extensionTools.enabled": false,
+        "cSpell.enabledNotifications": {
+            "Average Word Length too Long": false,
+            "Lines too Long": false,
+            "Maximum Word Length Exceeded": false
+        },
+        "cSpell.language": "en-GB",
+        "debug.javascript.autoAttachFilter": "disabled",
+        "diffEditor.codeLens": true,
+        "diffEditor.experimental.showMoves": true,
+        "diffEditor.ignoreTrimWhitespace": false,
+        "docker.extension.enableComposeLanguageServer": false,
+        "editor.autoClosingBrackets": "beforeWhitespace",
+        "editor.autoClosingComments": "beforeWhitespace",
+        "editor.autoClosingDelete": "auto",
+        "editor.autoClosingQuotes": "beforeWhitespace",
+        "editor.autoIndent": "full",
+        "editor.autoIndentOnPaste": true,
+        "editor.codeActionsOnSave": {
+            "source.addMissingImports.ts": "explicit",
+            "source.fixAll.eslint": "explicit",
+            "source.fixAll.pylance": "explicit",
+            "source.fixAll.ruff": "explicit",
+            "source.fixAll.shellcheck": "explicit",
+            "source.fixAll.ts": "explicit",
+            "source.formatAll.terraform": "explicit",
+            "source.organizeImports": "explicit",
+            "source.organizeImports.ruff": "explicit",
+            "source.removeUnusedImports": "explicit"
+        },
+        "editor.copyWithSyntaxHighlighting": false,
+        "editor.detectIndentation": true,
+        "editor.fontFamily": "CaskaydiaCove Nerd Font Mono, Menlo, Monaco, 'Courier New', monospace",
+        "editor.fontLigatures": true,
+        "editor.formatOnPaste": true,
+        "editor.formatOnSave": true,
+        "editor.formatOnType": true,
+        "editor.guides.bracketPairs": true,
+        "editor.guides.indentation": true,
+        "editor.inlayHints.enabled": "on",
+        "editor.linkedEditing": true,
+        "editor.minimap.renderCharacters": false,
+        "editor.rulers": [100],
+        "editor.stickyScroll.enabled": false,
+        "editor.wordWrap": "off",
+        "eslint.options": {
+            "reportUnusedDisableDirectives": true
+        },
+        "explorer.confirmDelete": false,
+        "explorer.confirmDragAndDrop": false,
+        "explorer.fileNesting.enabled": true,
+        "explorer.fileNesting.patterns": {
+            "*.tf": "*.${capture}.${extname}",
+            "*.ts": "${basename}.*, ${basename}.test.${extname}"
+        },
+        "files.eol": "\n",
+        "git.confirmSync": false,
+        "git.enableSmartCommit": true,
+        "gitlens.advanced.messages": {
+            "suppressCreatePullRequestPrompt": true
+        },
+        "gitlens.codeLens.scopes": ["document"],
+        "gitlens.gitCommands.skipConfirmations": [
+            "fetch:command",
+            "stash-push:command",
+            "switch:command",
+            "branch-create:command"
+        ],
+        "gitlens.telemetry.enabled": false,
+        "gitlens.views.branches.branches.layout": "list",
+        "javascript.updateImportsOnFileMove.enabled": "always",
+        "liveServer.settings.donotShowInfoMsg": true,
+        "makefile.configureOnOpen": true,
+        "prettier.printWidth": 100,
+        "prettier.semi": true,
+        "prettier.tabWidth": 4,
+        "prettier.trailingComma": "all",
+        "projectManager.git.ignoredFolders": [
+            "node_modules",
+            "out",
+            "typings",
+            "test",
+            ".haxelib",
+            ".oh-my-zsh"
+        ],
+        "projectManager.sortList": "Recent",
+        "pylint.args": ["--disable=C0114,C0103,C0116,W0603,C0301,W0719,C0115,W0718"],
+        "python.analysis.autoFormatStrings": true,
+        "python.analysis.autoImportCompletions": true,
+        "python.analysis.completeFunctionParens": true,
+        "python.analysis.inlayHints.functionReturnTypes": true,
+        "python.analysis.inlayHints.pytestParameters": true,
+        "python.analysis.inlayHints.variableTypes": true,
+        "python.analysis.typeEvaluation.enableExperimentalFeatures": true,
+        "python.analysis.typeEvaluation.enableReachabilityAnalysis": true,
+        "python.analysis.typeEvaluation.strictDictionaryInference": true,
+        "python.analysis.typeEvaluation.strictListInference": true,
+        "python.analysis.typeEvaluation.strictSetInference": true,
+        "redhat.telemetry.enabled": false,
+        "rest-client.enableTelemetry": false,
+        "shellcheck.customArgs": ["--external-sources"],
+        "telemetry.editStats.enabled": false,
+        "telemetry.feedback.enabled": false,
+        "terminal.integrated.enableMultiLinePasteWarning": "never",
+        "terminal.integrated.scrollback": 10000,
+        "typescript.implementationsCodeLens.enabled": true,
+        "typescript.inlayHints.variableTypes.suppressWhenTypeMatchesName": false,
+        "typescript.preferences.importModuleSpecifier": "project-relative",
+        "typescript.preferences.includePackageJsonAutoImports": "on",
+        "typescript.preferences.organizeImports": {
+            "caseSensitivity": "caseInsensitive"
+        },
+        "typescript.preferGoToSourceDefinition": true,
+        "typescript.referencesCodeLens.enabled": true,
+        "typescript.suggest.completeFunctionCalls": true,
+        "typescript.tsserver.log": "off",
+        "typescript.updateImportsOnFileMove.enabled": "always"
+    },
+    "keybindings": [
+        {
+            "command": "projectManager.listProjects",
+            "key": "ctrl+o"
+        },
+        {
+            "command": "-projectManager.listProjects",
+            "key": "shift+alt+p"
+        }
+    ],
+    "extensions": [
+        "alefragnani.bookmarks@13.5.0",
+        "alefragnani.project-manager@12.8.0",
+        "charliermarsh.ruff@2025.26.0",
+        "christian-kohler.npm-intellisense@1.4.5",
+        "davidanson.vscode-markdownlint@0.60.0",
+        "dbaeumer.vscode-eslint@3.0.16",
+        "docker.docker@0.16.0",
+        "eamodio.gitlens@17.4.1",
+        "esbenp.prettier-vscode@11.0.0",
+        "firsttris.vscode-jest-runner@0.4.82",
+        "foxundermoon.shell-format@7.2.5",
+        "hashicorp.terraform@2.36.2",
+        "humao.rest-client@0.25.1",
+        "ms-azuretools.vscode-containers@2.1.0",
+        "ms-azuretools.vscode-docker@2.0.0",
+        "ms-kubernetes-tools.vscode-kubernetes-tools@1.3.26",
+        "ms-python.debugpy@2025.10.0",
+        "ms-python.pylint@2025.2.0",
+        "ms-python.python@2025.14.0",
+        "ms-python.vscode-pylance@2025.7.1",
+        "ms-python.vscode-python-envs@1.8.0",
+        "ms-vscode-remote.remote-containers@0.427.0",
+        "ms-vscode-remote.remote-ssh@0.120.0",
+        "ms-vscode-remote.remote-ssh-edit@0.87.0",
+        "ms-vscode-remote.remote-wsl@0.104.1",
+        "ms-vscode.makefile-tools@0.12.17",
+        "ms-vscode.powershell@2025.2.0",
+        "ms-vscode.remote-explorer@0.5.0",
+        "natqe.reload@0.0.7",
+        "naumovs.color-highlight@2.8.0",
+        "redhat.java@1.45.0",
+        "redhat.vscode-yaml@1.18.0",
+        "ritwickdey.liveserver@5.7.9",
+        "streetsidesoftware.code-spell-checker@4.2.6",
+        "timonwong.shellcheck@0.38.3",
+        "tombonnike.vscode-status-bar-format-toggle@3.2.0",
+        "vscjava.vscode-gradle@3.17.0",
+        "vscjava.vscode-java-debug@0.58.2",
+        "vscjava.vscode-java-dependency@0.24.1",
+        "vscjava.vscode-java-pack@0.29.2",
+        "vscjava.vscode-java-test@0.43.1",
+        "vscjava.vscode-maven@0.44.0"
+    ]
+}

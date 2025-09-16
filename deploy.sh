@@ -8,8 +8,12 @@ secrets_file="$script_dir/secrets.env"
 
 touch "$secrets_file"
 
+set -a
+
 # shellcheck source=./secrets.env
 . "$secrets_file"
+
+set +a
 
 if [[ "$OSTYPE" == "cygwin" || "$OSTYPE" == "msys" ]]; then
     os="win"
@@ -38,34 +42,27 @@ linux)
     ;;
 esac
 
-file_names=("settings.json" "keybindings.json")
+config_types=("settings" "keybindings")
+default_config=$(envsubst <"$script_dir/profiles/default.json" | jq)
+profile_config="{}"
 
-for file_name in "${file_names[@]}"; do
-    target_file="$target_dir/$file_name"
-
-    echo -e "\nUpdating VS Code $file_name: $target_file"
-
-    if [ -f "$script_dir/profiles/$profile.$file_name" ]; then
-        profile_json=$(
-            jq -n \
-                --arg JIRA_PROJECT_KEY "$JIRA_PROJECT_KEY" \
-                --arg JIRA_SITE_ID "$JIRA_SITE_ID" \
-                -f "$script_dir/profiles/$profile.$file_name"
-        )
-
-        jq --argjson profile "$profile_json" '. + $profile' "$script_dir/$file_name" >"$target_file"
-    else
-        jq -fn "$script_dir/$file_name" >"$target_file"
-    fi
-done
-
-readarray -t extensions <"$script_dir/extensions.txt"
-
-if [ -f "$script_dir/profiles/$profile.extensions.txt" ]; then
-    readarray -t -O "${#extensions[@]}" extensions <"$script_dir/profiles/$profile.extensions.txt"
+if [ -f "$script_dir/profiles/$profile.json" ]; then
+    profile_config=$(envsubst <"$script_dir/profiles/$profile.json" | jq)
 fi
 
-extension_diff=$(diff -c <(echo "${extensions[@]}" | tr ' ' '\n' | sort -u) <(code --list-extensions --show-versions | sort) || :)
+for config in "${config_types[@]}"; do
+    target_file="$target_dir/$config.json"
+
+    echo -e "\nUpdating VS Code $config file: $target_file"
+
+    echo "$default_config" | jq --argjson profile "$profile_config" '.'"$config"' + $profile.'"$config" >"$target_file"
+done
+
+readarray -t extensions < <(echo "$default_config" |
+    jq --argjson profile "$profile_config" '.extensions + $profile.extensions' |
+    jq -cr ".[]")
+
+extension_diff=$(diff -cw <(echo "${extensions[@]}" | tr ' ' '\n' | sort -u) <(code --list-extensions --show-versions | sort) || :)
 
 if [[ -n $extension_diff ]]; then
     echo -e "\nExtension mismatch found:"
