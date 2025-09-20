@@ -2,7 +2,9 @@
 
 set -e
 
-profile="$1"
+mode="${1:-diff}"
+profile="$2"
+
 script_dir=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
 secrets_file="$script_dir/secrets.env"
 
@@ -53,10 +55,28 @@ fi
 for config in "${config_types[@]}"; do
     target_file="$target_dir/$config.json"
 
-    echo -e "\nUpdating VS Code $config file: $target_file"
+    config_output=$(echo "$default_config" | jq --argjson profile "$profile_config" '.'"$config"' + $profile.'"$config")
 
-    echo "$default_config" | jq --argjson profile "$profile_config" '.'"$config"' + $profile.'"$config" >"$target_file"
+    if [ "$mode" == "diff" ]; then
+        echo -e "\nChecking $config file: $target_file..."
+
+        file_diff=$(diff -cw <(echo "$config_output") "$target_file" || :)
+
+        if [[ -n $file_diff ]]; then
+            echo -e "\n$file_diff"
+        else
+            echo -e "\n${config^} file matched"
+        fi
+    elif [ "$mode" == "apply" ]; then
+        echo -e "\nUpdating $config file: $target_file"...
+
+        echo "$config_output" >"$target_file"
+
+        echo -e "\nDone"
+    fi
 done
+
+echo -e "\nChecking extensions..."
 
 readarray -t extensions < <(echo "$default_config" |
     jq --argjson profile "$profile_config" '.extensions + $profile.extensions' |
@@ -100,5 +120,5 @@ if [[ -n $extension_diff ]]; then
         echo "$missing_extensions"
     fi
 else
-    echo -e "\nAll Extensions matched"
+    echo -e "\nAll extensions matched"
 fi
