@@ -55,12 +55,12 @@ fi
 for config in "${config_types[@]}"; do
     target_file="$target_dir/$config.json"
 
-    config_output=$(echo "$default_config" | jq --argjson profile "$profile_config" '.'"$config"' + $profile.'"$config")
+    config_output=$(echo "$default_config" | jq --sort-keys --argjson profile "$profile_config" '.'"$config"' + $profile.'"$config")
 
     if [ "$mode" == "diff" ]; then
         echo -e "\nChecking $config file: $target_file..."
 
-        file_diff=$(diff -cw <(echo "$config_output") "$target_file" || :)
+        file_diff=$(diff -cw <(echo "$config_output") <(jq -n --sort-keys -f "$target_file") || :)
 
         if [[ -n $file_diff ]]; then
             echo -e "\n$file_diff"
