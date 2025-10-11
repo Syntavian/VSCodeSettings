@@ -5,18 +5,6 @@ set -e
 mode="${1:-diff}"
 profile="$2"
 
-script_dir=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
-secrets_file="$script_dir/secrets.env"
-
-touch "$secrets_file"
-
-set -a
-
-# shellcheck source=./secrets.env
-. "$secrets_file"
-
-set +a
-
 if [[ "$OSTYPE" == "cygwin" || "$OSTYPE" == "msys" ]]; then
     os="win"
 elif [[ "$OSTYPE" == "darwin"* ]]; then
@@ -44,13 +32,37 @@ linux)
     ;;
 esac
 
-config_types=("settings" "keybindings")
-default_config=$(envsubst <"$script_dir/base.json" | jq)
-profile_config="{}"
+script_dir=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
+secrets_file="$script_dir/secrets.env"
+
+touch "$secrets_file"
+
+set -a
+
+# shellcheck source=./secrets.env
+. "$secrets_file"
+
+set +a
+
+subbed_vars=()
+
+# Read the file line by line
+while IFS= read -r line; do
+    subbed_vars+=("$(echo "$line" | cut -d "=" -f 1)")
+done <"$secrets_file"
+
+# shellcheck disable=SC2016
+subbed_var_string=$(printf '${%s} ' "${subbed_vars[@]}")
+
+default_config=$(envsubst "$subbed_var_string" <"$script_dir/base.json" | jq)
 
 if [ -f "$script_dir/profiles/$profile.json" ]; then
-    profile_config=$(envsubst <"$script_dir/profiles/$profile.json" | jq)
+    profile_config=$(envsubst "$subbed_var_string" <"$script_dir/profiles/$profile.json" | jq)
+else
+    profile_config="{}"
 fi
+
+config_types=("settings" "keybindings")
 
 for config in "${config_types[@]}"; do
     target_file="$target_dir/$config.json"
