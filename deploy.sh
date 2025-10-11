@@ -45,7 +45,7 @@ linux)
 esac
 
 config_types=("settings" "keybindings")
-default_config=$(envsubst <"$script_dir/profiles/default.json" | jq)
+default_config=$(envsubst <"$script_dir/base.json" | jq)
 profile_config="{}"
 
 if [ -f "$script_dir/profiles/$profile.json" ]; then
