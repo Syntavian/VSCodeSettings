@@ -1,9 +1,51 @@
 #!/usr/bin/env bash
 
-set -e
+set -euo pipefail
 
-mode="${1:-diff}"
-profile="$2"
+mode="diff"
+
+while [ $# -gt 0 ]; do
+    case "$1" in
+    -m* | --mode*)
+        if [[ "$1" != *=* ]]; then
+            shift
+        fi
+        mode="${1#*=}"
+        ;;
+    -p* | --profile*)
+        if [[ "$1" != *=* ]]; then
+            shift
+        fi
+        profile="${1#*=}"
+        ;;
+    --)
+        shift
+        if [ -n "$*" ]; then
+            profile="$*"
+        fi
+        break
+        ;;
+    -h | --help)
+        echo -e "
+Usage: ./main.sh [options] -- [profile]
+
+Options:
+    -m, --mode=MODE          MODE is 'diff' or 'apply';
+    -p, --profile=PROFILE    PROFILE is the name of a file, excluding extension, in the ./profiles dir;
+    --                       signifies the end of option arguments, anything following this arg will be interpreted as the profile to use;\
+"
+        exit
+        ;;
+    *)
+        if [[ "$1" == -* ]]; then
+            echo -e "\nUnknown argument: '${1%%=*}'" >&2
+            exit 1
+        fi
+        profile="$1"
+        ;;
+    esac
+    shift
+done
 
 if [[ "$OSTYPE" == "cygwin" || "$OSTYPE" == "msys" ]]; then
     os="win"
@@ -12,7 +54,7 @@ elif [[ "$OSTYPE" == "darwin"* ]]; then
 elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
     os="linux"
 else
-    echo -e "\nUnknown OS detected: $OSTYPE" >&2
+    echo -e "\nUnknown OS detected: '$OSTYPE'" >&2
     exit 1
 fi
 
@@ -27,7 +69,7 @@ linux)
     target_dir="$HOME/.config/Code/User"
     ;;
 *)
-    echo -e "\nUnimplemented OS target: $os" >&2
+    echo -e "\nUnimplemented OS target: '$os'" >&2
     exit 1
     ;;
 esac
@@ -56,8 +98,13 @@ subbed_var_string=$(printf '${%s} ' "${subbed_vars[@]}")
 
 default_config=$(envsubst "$subbed_var_string" <"$script_dir/base.json" | jq)
 
-if [ -f "$script_dir/profiles/$profile.json" ]; then
-    profile_config=$(envsubst "$subbed_var_string" <"$script_dir/profiles/$profile.json" | jq)
+if [ -n "${profile:-}" ]; then
+    if [ -f "$script_dir/profiles/$profile.json" ]; then
+        profile_config=$(envsubst "$subbed_var_string" <"$script_dir/profiles/$profile.json" | jq)
+    else
+        echo -e "\nProfile file: '$script_dir/profiles/$profile.json' for profile: '$profile' does not exist" >&2
+        exit 1
+    fi
 else
     profile_config="{}"
 fi
@@ -70,7 +117,7 @@ for config in "${config_types[@]}"; do
     config_output=$(echo "$default_config" | jq --sort-keys --argjson profile "$profile_config" '.'"$config"' + $profile.'"$config")
 
     if [ "$mode" == "diff" ]; then
-        echo -e "\nChecking $config file: $target_file..."
+        echo -e "\nChecking $config file: '$target_file'..."
 
         file_diff=$(diff -cw <(echo "$config_output") <(jq -n --sort-keys -f "$target_file") || :)
 
@@ -79,8 +126,8 @@ for config in "${config_types[@]}"; do
         else
             echo -e "\n${config^} file matched"
         fi
-    elif [ "$mode" == "apply" ]; then
-        echo -e "\nUpdating $config file: $target_file"...
+    elif [[ "$mode" == "apply" || "$mode" == "set" || "$mode" == "deploy" ]]; then
+        echo -e "\nUpdating $config file: '$target_file'"...
 
         echo "$config_output" >"$target_file"
 
@@ -100,8 +147,8 @@ if [[ -n $extension_diff ]]; then
     echo -e "\nExtension mismatch found:"
 
     changed_extensions=$(echo "$extension_diff" | grep "^\!.*@" | cut -c3-)
-    added_extensions=$(echo "$extension_diff" | grep "^+.*@" | cut -c3- | sed 's/^/    /')
-    missing_extensions=$(echo "$extension_diff" | grep "^-.*@" | cut -c3- | sed 's/^/    /')
+    added_extensions=$(echo "$extension_diff" | grep "^+.*@" | cut -c3- | sed 's/^/    /' || :)
+    missing_extensions=$(echo "$extension_diff" | grep "^-.*@" | cut -c3- | sed 's/^/    /' || :)
 
     if [[ -n $changed_extensions ]]; then
         echo -e "\n  Extensions changed in VS Code:"
