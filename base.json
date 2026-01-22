@@ -1,4 +1,37 @@
 {
+    "extensions": [
+        "alefragnani.bookmarks@14.0.0",
+        "alefragnani.project-manager@13.0.1",
+        "charliermarsh.ruff@2026.34.0",
+        "christian-kohler.npm-intellisense@1.4.5",
+        "davidanson.vscode-markdownlint@0.61.1",
+        "dbaeumer.vscode-eslint@3.0.20",
+        "docker.docker@0.18.0",
+        "eamodio.gitlens@17.9.0",
+        "esbenp.prettier-vscode@12.3.0",
+        "firsttris.vscode-jest-runner@0.4.98",
+        "foxundermoon.shell-format@7.2.5",
+        "hashicorp.terraform@2.37.6",
+        "humao.rest-client@0.25.1",
+        "ms-azuretools.vscode-containers@2.3.0",
+        "ms-azuretools.vscode-docker@2.0.0",
+        "ms-kubernetes-tools.vscode-kubernetes-tools@1.3.29",
+        "ms-python.debugpy@2025.18.0",
+        "ms-python.pylint@2025.2.0",
+        "ms-python.python@2026.0.0",
+        "ms-python.vscode-pylance@2025.10.4",
+        "ms-python.vscode-python-envs@1.16.0",
+        "ms-vscode-remote.remote-containers@0.437.0",
+        "ms-vscode.makefile-tools@0.12.17",
+        "natqe.reload@0.0.7",
+        "naumovs.color-highlight@2.8.0",
+        "redhat.vscode-yaml@1.19.1",
+        "ritwickdey.liveserver@5.7.9",
+        "streetsidesoftware.code-spell-checker@4.4.0",
+        "timonwong.shellcheck@0.38.6",
+        "tombonnike.vscode-status-bar-format-toggle@3.2.0"
+    ],
+    "keybindings": [],
     "settings": {
         "[css]": {
             "editor.defaultFormatter": "esbenp.prettier-vscode"
@@ -11,8 +44,10 @@
                 "comments": false,
                 "other": true,
                 "strings": true
-            },
-            "editor.tabSize": 2
+            }
+        },
+        "[dockerfile]": {
+            "editor.defaultFormatter": "ms-azuretools.vscode-containers"
         },
         "[github-actions-workflow]": {
             "editor.defaultFormatter": "redhat.vscode-yaml"
@@ -63,6 +98,18 @@
                 "source.organizeImports": "never"
             },
             "editor.defaultFormatter": "esbenp.prettier-vscode"
+        },
+        "[yaml]": {
+            "diffEditor.ignoreTrimWhitespace": false,
+            "editor.autoIndent": "advanced",
+            "editor.defaultColorDecorators": "never",
+            "editor.defaultFormatter": "esbenp.prettier-vscode",
+            "editor.insertSpaces": true,
+            "editor.quickSuggestions": {
+                "comments": false,
+                "other": true,
+                "strings": true
+            }
         },
         "chat.agent.enabled": false,
         "chat.commandCenter.enabled": false,
@@ -124,6 +171,9 @@
             "package.json": ".eslintrc.js, .eslintcache, .swcrc, .swcrc-build, jest.config.js, jest.setEnvVars.js, tsconfig-build.json, tsconfig.json, tsoa.json"
         },
         "explorer.sortOrder": "foldersNestsFiles",
+        "files.associations": {
+            "*.json": "json"
+        },
         "files.eol": "\n",
         "git.confirmSync": false,
         "git.enableSmartCommit": true,
@@ -174,6 +224,8 @@
         "telemetry.feedback.enabled": false,
         "terminal.integrated.enableMultiLinePasteWarning": "never",
         "terminal.integrated.scrollback": 10000,
+        "terraform.experimentalFeatures.prefillRequiredFields": true,
+        "terraform.experimentalFeatures.validateOnSave": true,
         "typescript.implementationsCodeLens.enabled": true,
         "typescript.inlayHints.variableTypes.suppressWhenTypeMatchesName": false,
         "typescript.preferences.importModuleSpecifier": "project-relative",
@@ -186,38 +238,5 @@
         "typescript.suggest.completeFunctionCalls": true,
         "typescript.tsserver.log": "off",
         "typescript.updateImportsOnFileMove.enabled": "always"
-    },
-    "keybindings": [],
-    "extensions": [
-        "alefragnani.bookmarks@13.5.0",
-        "alefragnani.project-manager@12.8.0",
-        "charliermarsh.ruff@2025.28.0",
-        "christian-kohler.npm-intellisense@1.4.5",
-        "davidanson.vscode-markdownlint@0.60.0",
-        "dbaeumer.vscode-eslint@3.0.16",
-        "docker.docker@0.17.0",
-        "eamodio.gitlens@17.6.1",
-        "esbenp.prettier-vscode@11.0.0",
-        "firsttris.vscode-jest-runner@0.4.84",
-        "foxundermoon.shell-format@7.2.5",
-        "hashicorp.terraform@2.37.4",
-        "humao.rest-client@0.25.1",
-        "ms-azuretools.vscode-containers@2.2.0",
-        "ms-azuretools.vscode-docker@2.0.0",
-        "ms-kubernetes-tools.vscode-kubernetes-tools@1.3.26",
-        "ms-python.debugpy@2025.14.0",
-        "ms-python.pylint@2025.2.0",
-        "ms-python.python@2025.16.0",
-        "ms-python.vscode-pylance@2025.8.3",
-        "ms-python.vscode-python-envs@1.8.0",
-        "ms-vscode-remote.remote-containers@0.427.0",
-        "ms-vscode.makefile-tools@0.12.17",
-        "natqe.reload@0.0.7",
-        "naumovs.color-highlight@2.8.0",
-        "redhat.vscode-yaml@1.19.1",
-        "ritwickdey.liveserver@5.7.9",
-        "streetsidesoftware.code-spell-checker@4.2.6",
-        "timonwong.shellcheck@0.38.3",
-        "tombonnike.vscode-status-bar-format-toggle@3.2.0"
-    ]
+    }
 }
