@@ -1,35 +1,35 @@
 {
     "extensions": [
-        "alefragnani.bookmarks@14.0.0",
-        "alefragnani.project-manager@13.0.1",
-        "charliermarsh.ruff@2026.34.0",
-        "christian-kohler.npm-intellisense@1.4.5",
-        "davidanson.vscode-markdownlint@0.61.1",
-        "dbaeumer.vscode-eslint@3.0.20",
-        "docker.docker@0.18.0",
-        "eamodio.gitlens@17.9.0",
-        "esbenp.prettier-vscode@12.3.0",
-        "firsttris.vscode-jest-runner@0.4.98",
+        "alefragnani.bookmarks",
+        "alefragnani.project-manager",
+        "charliermarsh.ruff",
+        "christian-kohler.npm-intellisense",
+        "davidanson.vscode-markdownlint",
+        "dbaeumer.vscode-eslint",
+        "docker.docker",
+        "eamodio.gitlens",
+        "esbenp.prettier-vscode",
+        "firsttris.vscode-jest-runner",
         "foxundermoon.shell-format@7.2.5",
-        "hashicorp.terraform@2.37.6",
-        "humao.rest-client@0.25.1",
-        "ms-azuretools.vscode-containers@2.3.0",
-        "ms-azuretools.vscode-docker@2.0.0",
-        "ms-kubernetes-tools.vscode-kubernetes-tools@1.3.29",
-        "ms-python.debugpy@2025.18.0",
-        "ms-python.pylint@2025.2.0",
-        "ms-python.python@2026.0.0",
-        "ms-python.vscode-pylance@2025.10.4",
-        "ms-python.vscode-python-envs@1.16.0",
-        "ms-vscode-remote.remote-containers@0.437.0",
-        "ms-vscode.makefile-tools@0.12.17",
-        "natqe.reload@0.0.7",
-        "naumovs.color-highlight@2.8.0",
+        "hashicorp.terraform",
+        "humao.rest-client",
+        "ms-azuretools.vscode-containers",
+        "ms-azuretools.vscode-docker",
+        "ms-kubernetes-tools.vscode-kubernetes-tools",
+        "ms-python.debugpy",
+        "ms-python.pylint",
+        "ms-python.python",
+        "ms-python.vscode-pylance",
+        "ms-python.vscode-python-envs",
+        "ms-vscode-remote.remote-containers",
+        "ms-vscode.makefile-tools",
+        "natqe.reload",
+        "naumovs.color-highlight",
         "redhat.vscode-yaml@1.19.1",
-        "ritwickdey.liveserver@5.7.9",
-        "streetsidesoftware.code-spell-checker@4.4.0",
-        "timonwong.shellcheck@0.38.6",
-        "tombonnike.vscode-status-bar-format-toggle@3.2.0"
+        "ritwickdey.liveserver",
+        "streetsidesoftware.code-spell-checker",
+        "timonwong.shellcheck",
+        "tombonnike.vscode-status-bar-format-toggle"
     ],
     "keybindings": [],
     "settings": {
@@ -112,7 +112,6 @@
             }
         },
         "chat.agent.enabled": false,
-        "chat.commandCenter.enabled": false,
         "chat.extensionTools.enabled": false,
         "cSpell.enabledNotifications": {
             "Average Word Length too Long": false,
@@ -144,7 +143,6 @@
             "source.removeUnusedImports": "explicit"
         },
         "editor.copyWithSyntaxHighlighting": false,
-        "editor.detectIndentation": true,
         "editor.fontFamily": "CaskaydiaCove Nerd Font Mono, Menlo, Monaco, 'Courier New', monospace",
         "editor.fontLigatures": true,
         "editor.formatOnPaste": true,
@@ -168,7 +166,7 @@
         "explorer.fileNesting.patterns": {
             "*.tf": "*.${capture}.${extname}",
             "*.ts": "${basename}.*, ${basename}.test.${extname}",
-            "package.json": ".eslintrc.js, .eslintcache, .swcrc, .swcrc-build, jest.config.js, jest.setEnvVars.js, tsconfig-build.json, tsconfig.json, tsoa.json"
+            "package.json": ".eslintrc.js, .eslintcache, .swcrc, .swcrc-build, jest.config.js, jest.setEnvVars.js, tsconfig-build.json, tsconfig.json, tsoa.json, package-lock.json, .prettierrc.json, build.js, jest.setEnvVars.ts"
         },
         "explorer.sortOrder": "foldersNestsFiles",
         "files.associations": {
@@ -189,7 +187,32 @@
         ],
         "gitlens.telemetry.enabled": false,
         "gitlens.views.branches.branches.layout": "list",
+        "gitlens.views.branches.files.layout": "tree",
+        "inlineChat.affordance": false,
         "javascript.updateImportsOnFileMove.enabled": "always",
+        "js/ts.inlayHints.variableTypes.suppressWhenTypeMatchesName": false,
+        "js/ts.preferences.importModuleSpecifier": "project-relative",
+        "js/ts.preferences.includePackageJsonAutoImports": "on",
+        "js/ts.preferences.organizeImports": {
+            "caseSensitivity": "caseInsensitive"
+        },
+        "js/ts.preferGoToSourceDefinition": true,
+        "js/ts.referencesCodeLens.enabled": true,
+        "js/ts.referencesCodeLens.showOnAllFunctions": true,
+        "js/ts.suggest.completeFunctionCalls": true,
+        "js/ts.tsdk.promptToUseWorkspaceVersion": true,
+        "js/ts.tsserver.log": "off",
+        "js/ts.updateImportsOnFileMove.enabled": "always",
+        "json.schemaDownload.trustedDomains": {
+            "https://developer.microsoft.com/json-schemas/": true,
+            "https://json-schema.org/": true,
+            "https://json.schemastore.org/": true,
+            "https://raw.githubusercontent.com/DavidAnson/markdownlint/": true,
+            "https://raw.githubusercontent.com/devcontainers/spec/": true,
+            "https://raw.githubusercontent.com/microsoft/vscode/": true,
+            "https://schemastore.azurewebsites.net/": true,
+            "https://www.schemastore.org/": true
+        },
         "liveServer.settings.donotShowInfoMsg": true,
         "makefile.configureOnOpen": true,
         "prettier.printWidth": 100,
@@ -226,17 +249,7 @@
         "terminal.integrated.scrollback": 10000,
         "terraform.experimentalFeatures.prefillRequiredFields": true,
         "terraform.experimentalFeatures.validateOnSave": true,
-        "typescript.implementationsCodeLens.enabled": true,
-        "typescript.inlayHints.variableTypes.suppressWhenTypeMatchesName": false,
-        "typescript.preferences.importModuleSpecifier": "project-relative",
-        "typescript.preferences.includePackageJsonAutoImports": "on",
-        "typescript.preferences.organizeImports": {
-            "caseSensitivity": "caseInsensitive"
-        },
-        "typescript.preferGoToSourceDefinition": true,
-        "typescript.referencesCodeLens.enabled": true,
-        "typescript.suggest.completeFunctionCalls": true,
-        "typescript.tsserver.log": "off",
-        "typescript.updateImportsOnFileMove.enabled": "always"
+        "workbench.colorTheme": "Dark Modern",
+        "yaml.format.singleQuote": true
     }
 }

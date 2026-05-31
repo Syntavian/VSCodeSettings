@@ -1,114 +1,113 @@
 #!/usr/bin/env bash
 
-set -euo pipefail
+set -Eeuo pipefail
 
-mode="diff"
+script_dir=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
+project_dir=$(cd -- "$script_dir" && cd -- .. && pwd)
 
-while [ $# -gt 0 ]; do
-    case "$1" in
-    -m* | --mode*)
-        if [[ "$1" != *=* ]]; then
-            shift
-        fi
-        mode="${1#*=}"
-        ;;
-    -p* | --profile*)
-        if [[ "$1" != *=* ]]; then
-            shift
-        fi
-        profile="${1#*=}"
-        ;;
-    --)
-        shift
-        if [ -n "$*" ]; then
-            profile="$*"
-        fi
-        break
-        ;;
-    -h | --help)
-        echo -e "
-Usage: ./main.sh [options] -- [profile]
+# shellcheck source="./utils.sh"
+source "${script_dir}/utils.sh"
+
+usage=$(
+    cat <<EOF
+Usage: ./run.sh [options] -- [profile]
 
 Options:
     -m, --mode=MODE          MODE is 'diff' or 'apply';
     -p, --profile=PROFILE    PROFILE is the name of a file, excluding extension, in the ./profiles dir;
-    --                       signifies the end of option arguments, anything following this arg will be interpreted as the profile to use;\
-"
-        exit
-        ;;
-    *)
-        if [[ "$1" == -* ]]; then
-            echo -e "\nUnknown argument: '${1%%=*}'" >&2
-            exit 1
-        fi
-        profile="$1"
-        ;;
-    esac
-    shift
-done
+    --                       signifies the end of option arguments, anything following this arg will be interpreted as the profile to use;
+EOF
+)
 
-if [[ "$OSTYPE" == "cygwin" || "$OSTYPE" == "msys" ]]; then
-    os="win"
-elif [[ "$OSTYPE" == "darwin"* ]]; then
-    os="mac"
-elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
-    os="linux"
-else
-    echo -e "\nUnknown OS detected: '$OSTYPE'" >&2
-    exit 1
-fi
+function read_args() {
+    while [ $# -gt 0 ]; do
+        case "$1" in
+        -m* | --mode*)
+            if [[ "$1" != *=* ]]; then
+                shift
+            fi
+            mode="${1#*=}"
+            ;;
+        -p* | --profile*)
+            if [[ "$1" != *=* ]]; then
+                shift
+            fi
+            profile="${1#*=}"
+            ;;
+        --)
+            shift
+            if [ -n "$*" ]; then
+                profile="$*"
+            fi
+            break
+            ;;
+        -h | --help)
+            echo "$usage"
+            exit
+            ;;
+        *)
+            if [[ "$1" == -* ]]; then
+                echo -e "\nUnknown argument: '${1%%=*}'" >&2
+                exit 1
+            fi
+            profile="$1"
+            ;;
+        esac
+        shift
+    done
+}
 
-case $os in
-win)
-    target_dir="$HOME/AppData/Roaming/Code/User"
-    ;;
-mac)
-    target_dir="$HOME/Library/Application Support/Code/User"
-    ;;
-linux)
-    target_dir="$HOME/.config/Code/User"
-    ;;
-*)
-    echo -e "\nUnimplemented OS target: '$os'" >&2
-    exit 1
-    ;;
-esac
+mode="diff"
 
-script_dir=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
-secrets_file="$script_dir/secrets.env"
+read_args "$@"
 
+cat <<EOF
+
+VSCode settings orchestration tool started with config:
+
+  mode='${mode}'
+  profile='${profile:-None}'
+
+EOF
+
+secrets_file="$project_dir/secrets.env"
 touch "$secrets_file"
 
+echo -e "Reading var file: '$secrets_file'...\n"
+
+# Export all sourced vars in the following source operation
 set -a
-
-# shellcheck source=./secrets.env
-. "$secrets_file"
-
+# shellcheck source="../secrets.env"
+source "$secrets_file"
 set +a
 
 subbed_vars=()
 
-# Read the file line by line
 while IFS= read -r line; do
-    subbed_vars+=("$(echo "$line" | cut -d "=" -f 1)")
+    var_name=$(echo "$line" | cut -d "=" -f 1)
+
+    echo "Got var: '${var_name}'"
+
+    subbed_vars+=("${var_name}")
 done <"$secrets_file"
 
 # shellcheck disable=SC2016
 subbed_var_string=$(printf '${%s} ' "${subbed_vars[@]}")
 
-default_config=$(envsubst "$subbed_var_string" <"$script_dir/base.json" | jq)
+default_config=$(envsubst "$subbed_var_string" <"$project_dir/base.json" | jq)
 
 if [ -n "${profile:-}" ]; then
-    if [ -f "$script_dir/profiles/$profile.json" ]; then
-        profile_config=$(envsubst "$subbed_var_string" <"$script_dir/profiles/$profile.json" | jq)
+    if [ -f "$project_dir/profiles/$profile.json" ]; then
+        profile_config=$(envsubst "$subbed_var_string" <"$project_dir/profiles/$profile.json" | jq)
     else
-        echo -e "\nProfile file: '$script_dir/profiles/$profile.json' for profile: '$profile' does not exist" >&2
+        echo -e "\nProfile file: '$project_dir/profiles/$profile.json' for profile: '$profile' does not exist" >&2
         exit 1
     fi
 else
     profile_config="{}"
 fi
 
+target_dir=$(get_vscode_user_dir)
 config_types=("settings" "keybindings")
 
 for config in "${config_types[@]}"; do
