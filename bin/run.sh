@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# Merge VS Code configuration with a local profile, then compare or apply it.
 
 # Copyright (C) 2025, 2026 Thomas Sloman (Syntavian)
 # SPDX-License-Identifier: GPL-3.0-only
@@ -7,181 +8,312 @@
 
 set -Eeuo pipefail
 
-script_dir=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
-project_dir=$(cd -- "$script_dir" && cd -- .. && pwd)
+SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
+readonly SCRIPT_DIR
 
-# shellcheck source="./utils.sh"
-source "${script_dir}/utils.sh"
+PROJECT_DIR=$(cd -- "${SCRIPT_DIR}/.." && pwd)
+readonly PROJECT_DIR
 
-usage=$(
-    cat <<EOF
-Usage: ./run.sh [options] -- [profile]
+# shellcheck source-path=SCRIPTDIR
+# shellcheck source=./utils.sh
+source "${SCRIPT_DIR}/utils.sh"
+
+function show_help() {
+    cat <<'EOF'
+Compare or apply VS Code user settings/keybindings and check extensions.
+
+Usage: bash bin/run.sh [options] [--] [profile]
 
 Options:
-    -m, --mode=MODE          MODE is 'diff' or 'apply';
-    -p, --profile=PROFILE    PROFILE is the name of a file, excluding extension, in the ./profiles dir;
-    --                       signifies the end of option arguments, anything following this arg will be interpreted as the profile to use;
-EOF
-)
+    -h, --help               Show help and exit.
+    -m, --mode MODE          diff (default) or apply; set/deploy alias apply.
+    -p, --profile PROFILE    Local profiles/PROFILE.json; default: base only.
+    --                      End options; one optional profile may follow.
 
+Long value options also accept --mode=MODE and --profile=PROFILE.
+Specify a profile once, either by option or as a positional argument.
+
+Examples:
+    bash bin/run.sh --profile home
+    bash bin/run.sh --mode=diff -- home
+
+Apply overwrites settings/keybindings without backups; extensions are only checked.
+Normal execution may source secrets.env as shell code; use only trusted files.
+Exit status: 0 success (including differences/help), 2 usage error, 1 operation failed.
+EOF
+}
+
+function usage_error() {
+    echo "$1" >&2
+    echo 'Use --help for usage.' >&2
+
+    exit 2
+}
+
+# Sets main's mode/profile locals through intentional Bash dynamic scope.
 function read_args() {
-    while [ $# -gt 0 ]; do
+    local profile_seen=false option value
+
+    while (( $# > 0 )); do
         case "$1" in
-        -m* | --mode*)
-            if [[ "$1" != *=* ]]; then
-                shift
-            fi
-            mode="${1#*=}"
+        -h | --help)
+            show_help
+
+            exit 0
             ;;
-        -p* | --profile*)
-            if [[ "$1" != *=* ]]; then
-                shift
+        -m | --mode | -p | --profile)
+            option=$1
+
+            (( $# >= 2 )) || usage_error "Missing value for '${option}'"
+            [[ -n "$2" && "$2" != -* ]] || usage_error "Missing value for '${option}'"
+
+            value=$2
+
+            shift
+
+            case "${option}" in
+            -m | --mode) mode=${value} ;;
+            -p | --profile)
+                [[ "${profile_seen}" == false ]] || usage_error 'Profile specified more than once'
+
+                profile=${value}
+                profile_seen=true
+                ;;
+            esac
+            ;;
+        --mode=* | --profile=*)
+            option=${1%%=*}
+            value=${1#*=}
+
+            [[ -n "${value}" ]] || usage_error "Missing value for '${option}'"
+
+            if [[ "${option}" == --mode ]]; then
+                mode=${value}
+            else
+                [[ "${profile_seen}" == false ]] || usage_error 'Profile specified more than once'
+
+                profile=${value}
+                profile_seen=true
             fi
-            profile="${1#*=}"
             ;;
         --)
             shift
-            if [ -n "$*" ]; then
-                profile="$*"
+
+            (( $# <= 1 )) || usage_error 'Expected at most one profile'
+
+            if (( $# == 1 )); then
+                [[ "${profile_seen}" == false ]] || usage_error 'Profile specified more than once'
+                [[ -n "$1" ]] || usage_error 'Profile cannot be empty'
+
+                profile=$1
             fi
+
             break
             ;;
-        -h | --help)
-            echo "$usage"
-            exit
+        -*)
+            usage_error "Unknown argument: '${1%%=*}'"
             ;;
         *)
-            if [[ "$1" == -* ]]; then
-                echo -e "\nUnknown argument: '${1%%=*}'" >&2
-                exit 1
-            fi
-            profile="$1"
+            [[ "${profile_seen}" == false ]] || usage_error 'Expected at most one profile'
+            [[ -n "$1" ]] || usage_error 'Profile cannot be empty'
+
+            profile=$1
+            profile_seen=true
             ;;
         esac
+
         shift
     done
+
+    case "${mode}" in
+    diff | apply | set | deploy) ;;
+    *) usage_error "Unknown mode: '${mode}'" ;;
+    esac
 }
 
-mode="diff"
+function check_dependencies() {
+    local dependency
+    local -a missing=()
 
-read_args "$@"
-
-cat <<EOF
-
-VSCode settings orchestration tool started with config:
-
-  mode='${mode}'
-  profile='${profile:-None}'
-
-EOF
-
-secrets_file="$project_dir/secrets.env"
-touch "$secrets_file"
-
-echo -e "Reading var file: '$secrets_file'...\n"
-
-# Export all sourced vars in the following source operation
-set -a
-# shellcheck source="../secrets.env"
-source "$secrets_file"
-set +a
-
-subbed_vars=()
-
-while IFS= read -r line; do
-    var_name=$(echo "$line" | cut -d "=" -f 1)
-
-    echo "Got var: '${var_name}'"
-
-    subbed_vars+=("${var_name}")
-done <"$secrets_file"
-
-# shellcheck disable=SC2016
-subbed_var_string=$(printf '${%s} ' "${subbed_vars[@]}")
-
-default_config=$(envsubst "$subbed_var_string" <"$project_dir/base.json" | jq)
-
-if [ -n "${profile:-}" ]; then
-    if [ -f "$project_dir/profiles/$profile.json" ]; then
-        profile_config=$(envsubst "$subbed_var_string" <"$project_dir/profiles/$profile.json" | jq)
-    else
-        echo -e "\nProfile file: '$project_dir/profiles/$profile.json' for profile: '$profile' does not exist" >&2
-        exit 1
-    fi
-else
-    profile_config="{}"
-fi
-
-target_dir=$(get_vscode_user_dir)
-config_types=("settings" "keybindings")
-
-for config in "${config_types[@]}"; do
-    target_file="$target_dir/$config.json"
-
-    config_output=$(echo "$default_config" | jq --sort-keys --argjson profile "$profile_config" '.'"$config"' + $profile.'"$config")
-
-    if [ "$mode" == "diff" ]; then
-        echo -e "\nChecking $config file: '$target_file'..."
-
-        file_diff=$(diff -cw <(echo "$config_output") <(jq -n --sort-keys -f "$target_file") || :)
-
-        if [[ -n $file_diff ]]; then
-            echo -e "\n$file_diff"
-        else
-            echo -e "\n${config^} file matched"
+    for dependency in jq envsubst diff code sort; do
+        if ! command -v "${dependency}" >/dev/null; then
+            missing+=("${dependency}")
         fi
-    elif [[ "$mode" == "apply" || "$mode" == "set" || "$mode" == "deploy" ]]; then
-        echo -e "\nUpdating $config file: '$target_file'"...
+    done
 
-        echo "$config_output" >"$target_file"
-
-        echo -e "\nDone"
+    if (( ${#missing[@]} > 0 )); then
+        echo "Missing required dependencies: ${missing[*]}" >&2
+        return 1
     fi
-done
 
-echo -e "\nChecking extensions..."
+    return 0
+}
 
-readarray -t extensions < <(echo "$default_config" |
-    jq --argjson profile "$profile_config" '.extensions + $profile.extensions' |
-    jq -cr ".[]")
+# Print a context diff; ordinary differences succeed, operational errors return 1.
+function compare_text() {
+    local status=0
 
-extension_diff=$(diff -cw <(echo "${extensions[@]}" | tr ' ' '\n' | sort -u) <(code --list-extensions --show-versions | sort) || :)
+    diff -cw \
+        <(if [[ -n "$1" ]]; then printf '%s\n' "$1"; fi) \
+        <(if [[ -n "$2" ]]; then printf '%s\n' "$2"; fi) || status=$?
 
-if [[ -n $extension_diff ]]; then
-    echo -e "\nExtension mismatch found:"
+    if (( status > 1 )); then
+        echo 'Unable to compare configuration' >&2
+        return 1
+    fi
 
-    changed_extensions=$(echo "$extension_diff" | grep "^\!.*@" | cut -c3-)
-    added_extensions=$(echo "$extension_diff" | grep "^+.*@" | cut -c3- | sed 's/^/    /' || :)
-    missing_extensions=$(echo "$extension_diff" | grep "^-.*@" | cut -c3- | sed 's/^/    /' || :)
+    return 0
+}
 
-    if [[ -n $changed_extensions ]]; then
-        echo -e "\n  Extensions changed in VS Code:"
-        echo -e "    Expected:"
+# Check producers explicitly so process substitution cannot hide their failures.
+function check_extensions() {
+    local default_config=$1 profile_config=$2
+    local expected installed extension_diff line extension
+    local -a extensions=() changed=() added=() missing=()
 
-        while IFS=$'\n' read -r extension; do
-            if [[ ${extensions[*]} =~ $extension ]]; then
-                echo "      $extension"
+    expected=$(jq -r --argjson profile "${profile_config}" \
+        '.extensions + $profile.extensions | .[]' <<<"${default_config}") || return 1
+    installed=$(code --list-extensions --show-versions) || return 1
+    expected=$(sort -u <<<"${expected}") || return 1
+    installed=$(sort <<<"${installed}") || return 1
+    extension_diff=$(compare_text "${expected}" "${installed}") || return 1
+
+    if [[ -z "${extension_diff}" ]]; then
+        echo -e '\nAll extensions matched'
+        return 0
+    fi
+
+    echo -e '\nExtension mismatch found:'
+    readarray -t extensions <<<"${expected}"
+
+    while IFS= read -r line; do
+        case "${line}" in
+        '! '*@*) changed+=("${line:2}") ;;
+        '+ '*@*) added+=("${line:2}") ;;
+        '- '*@*) missing+=("${line:2}") ;;
+        esac
+    done <<<"${extension_diff}"
+
+    if (( ${#changed[@]} > 0 )); then
+        echo -e '\n  Extensions changed in VS Code:\n    Expected:'
+
+        for extension in "${changed[@]}"; do
+            for line in "${extensions[@]}"; do
+                if [[ "${line}" == "${extension}" ]]; then
+                    printf '      %s\n' "${extension}"
+
+                    break
+                fi
+            done
+        done
+
+        echo '    Found:'
+
+        for extension in "${changed[@]}"; do
+            for line in "${extensions[@]}"; do
+                [[ "${line}" != "${extension}" ]] || continue 2
+            done
+
+            printf '      %s\n' "${extension}"
+        done
+    fi
+
+    if (( ${#added[@]} > 0 )); then
+        echo -e '\n  Extensions added to VS Code:'
+        printf '    %s\n' "${added[@]}"
+    fi
+
+    if (( ${#missing[@]} > 0 )); then
+        echo -e '\n  Extensions missing in VS Code:'
+        printf '    %s\n' "${missing[@]}"
+    fi
+
+    return 0
+}
+
+function main() {
+    # read_args intentionally sets these caller-local variables.
+    local mode=diff profile=''
+
+    read_args "$@"
+
+    check_dependencies
+
+    echo -e '\nVSCode settings orchestration tool started with config:'
+    echo "  mode='${mode}'"
+    echo "  profile='${profile:-None}'"
+
+    local secrets_file="${PROJECT_DIR}/secrets.env"
+    local line var_name subbed_var_string default_config profile_config
+    local -a subbed_vars=()
+
+    if [[ -f "${secrets_file}" ]]; then
+        echo -e "Reading var file: '${secrets_file}'...\n"
+
+        set -a
+        # Local secrets are intentionally excluded from static analysis.
+        # shellcheck source=/dev/null
+        source "${secrets_file}"
+        set +a
+
+        while IFS= read -r line || [[ -n "${line}" ]]; do
+            var_name=${line%%=*}
+            subbed_vars+=("${var_name}")
+        done <"${secrets_file}"
+    fi
+
+    # envsubst requires literal variable references.
+    # shellcheck disable=SC2016
+    subbed_var_string=$(printf '${%s} ' "${subbed_vars[@]}")
+    default_config=$(envsubst "${subbed_var_string}" <"${PROJECT_DIR}/base.json" | jq)
+    profile_config='{}'
+
+    if [[ -n "${profile}" ]]; then
+        local profile_file="${PROJECT_DIR}/profiles/${profile}.json"
+
+        if [[ ! -f "${profile_file}" ]]; then
+            echo "Profile file: '${profile_file}' for profile: '${profile}' does not exist" >&2
+            return 1
+        fi
+
+        profile_config=$(envsubst "${subbed_var_string}" <"${profile_file}" | jq)
+    fi
+
+    local target_dir config target_file config_output current_config file_diff
+
+    target_dir=$(get_vscode_user_dir)
+
+    for config in settings keybindings; do
+        target_file="${target_dir}/${config}.json"
+        config_output=$(jq --sort-keys --argjson profile "${profile_config}" \
+            --arg config "${config}" '.[$config] + $profile[$config]' <<<"${default_config}")
+
+        if [[ "${mode}" == diff ]]; then
+            echo -e "\nChecking ${config} file: '${target_file}'..."
+
+            current_config=$(jq --sort-keys . "${target_file}")
+            file_diff=$(compare_text "${config_output}" "${current_config}")
+
+            if [[ -n "${file_diff}" ]]; then
+                printf '\n%s\n' "${file_diff}"
+            else
+                echo -e "\n${config^} file matched"
             fi
-        done <<<"$changed_extensions"
+        else
+            echo -e "\nUpdating ${config} file: '${target_file}'..."
 
-        echo -e "    Found:"
+            printf '%s\n' "${config_output}" >"${target_file}"
 
-        while IFS=$'\n' read -r extension; do
-            if ! [[ ${extensions[*]} =~ $extension ]]; then
-                echo "      $extension"
-            fi
-        done <<<"$changed_extensions"
-    fi
+            echo -e '\nDone'
+        fi
+    done
 
-    if [[ -n $added_extensions ]]; then
-        echo -e "\n  Extensions added to VS Code:"
-        echo "$added_extensions"
-    fi
+    echo -e '\nChecking extensions...'
 
-    if [[ -n $missing_extensions ]]; then
-        echo -e "\n  Extensions missing in VS Code:"
-        echo "$missing_extensions"
-    fi
-else
-    echo -e "\nAll extensions matched"
-fi
+    check_extensions "${default_config}" "${profile_config}"
+}
+
+# Normalize operational failures without disabling errexit inside main.
+trap 'exit 1' ERR
+
+main "$@"

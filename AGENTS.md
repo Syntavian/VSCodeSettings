@@ -1,46 +1,51 @@
-# VSCodeSettings main-line guidance
-
-Verified October 18, 2026 for standalone licensing work targeting main.
+# Project working notes
 
 ## Scope and environment
 
-Root: D:/Desktop/Stuff/Work/Projects/VSCodeSettings (WSL
-/mnt/d/Desktop/Stuff/Work/Projects/VSCodeSettings). Bash scripts combine base.json
-and an optional local profile to compare/apply VS Code settings and keybindings.
-Original material is GPL-3.0-only; preserve existing grants, LICENSE and notices.
-Strict JSON settings remain comment-free and are covered by the README grant.
+- Bash-based VS Code settings manager; `base.json` is combined with an optional local profile.
+- This checkout is Windows-hosted at `D:\Desktop\Stuff\Work\Projects\VSCodeSettings`; shell commands run through WSL at `/mnt/d/Desktop/Stuff/Work/Projects/VSCodeSettings`.
+- When launched from WSL, manage Windows VS Code user settings by default. Resolve the Windows application-data directory through PowerShell and translate it with `wslpath`; do not assume the Windows username or drive.
+- Preserve native Linux/macOS and existing MSYS/Cygwin path behavior. Remote settings, named VS Code profiles, portable mode, and Insiders are not currently handled.
 
-Windows-hosted VS Code workspace; commands run in WSL. Verified Bash 5.2.21,
-Git 2.43.0, jq 1.7, and available envsubst/diff. Active extension host and intended
-runtime setup remain unverified. No dependencies were installed.
+## Dependencies and sensitive paths
 
-## Safety and validation
+- Runtime: Bash 4+, `jq`, `envsubst`, `diff`, standard shell utilities, and the VS Code `code` CLI. WSL additionally requires `powershell.exe` and `wslpath`.
+- No package-manager manifest, pinned tool versions, or CI configuration is currently present.
+- `jq` and ShellCheck are available in WSL at `/usr/bin/jq` and `/usr/bin/shellcheck`. ShellCheck 0.9.0 was verified; do not install or upgrade tools without authorization.
+- `secrets.env` and local profiles are ignored; do not read secret values. The tracked `profiles/_template_.json` is safe sample configuration.
+- `bin/run.sh` checks dependencies before loading an existing `secrets.env` as shell code. It does not create a missing secrets file. Normal execution can still load real secrets and read live settings; use isolated tests for routine validation.
+- Apply mode overwrites live settings/keybindings without backups. Do not run it as a test.
 
-This main-line implementation differs from feature/bash-cleanup: normal startup
-creates/sources secrets.env, reads live settings and inventories extensions.
-Apply/set/deploy overwrites settings without a verified backup process. Do not
-run normal/apply modes for validation or read ignored secrets/local profiles.
-Runtime requires Bash, jq, envsubst, diff and code; do not silently substitute
-Windows/WSL tools or apply settings to establish compatibility.
+## Safe validation
 
-Safe checks from root: bash -n bin/run.sh bin/utils.sh, and
-jq empty base.json profiles/_template_.json. Both passed before notice edits.
-For notice-only changes compare the original source bodies byte-for-byte.
-Validate document links/LF/newlines/whitespace and exact LICENSE bytes.
-No tests, CI, manifest or lockfile exist on this main-based milestone. Tests and
-behavioral changes on feature/bash-cleanup are outside this milestone; do not
-copy them into this branch. Runtime and platform behavior remain unverified.
+Run from the repository root in WSL:
 
-## Git milestone
+- `bash -n bin/run.sh bin/utils.sh tests/utils_test.sh tests/run_test.sh`
+- `shellcheck -x bin/run.sh bin/utils.sh tests/run_test.sh tests/utils_test.sh` — follows library sources; the real secrets file is explicitly excluded from static analysis.
+- `bash tests/utils_test.sh` — mocks Windows tools and platform detection; does not read secrets or access live settings.
+- `bash tests/run_test.sh` — Bash tests use disposable project/settings fixtures and a mocked `code` CLI, with automatic cleanup on exit. Comparison cases require `jq` and `envsubst`; missing tools cause explicit skips. No Python or external test framework is required.
+- `jq . base.json > /dev/null`
+- `jq . profiles/_template_.json > /dev/null`
+- `bash bin/run.sh --help` — exits before loading secrets or touching settings.
 
-Standalone work branch work/w1-license-rollout targets main, baseline 3b4b939
-matching fetched origin/main. feature/bash-cleanup must remain unchanged at
-2f8b1ab; do not integrate that feature as part of licensing. At inspection it was
-two commits ahead of main. Feature guidance differs and may require reconciliation
-in a separately authorized future integration.
+Syntax/help checks and isolated tests passed. Tests cover target selection, library error returns, dependency preflight before secrets loading, exact option matching, missing values, profile argument boundaries, early help, base/profile comparisons, invalid target JSON, extension mismatches, and command/comparison failures. Apply mode, real extension inventory, JSON-with-comments targets, and backup/recovery remain unverified.
 
-Current scope is licensing notices, README and required main-line AGENTS.md only.
-Integration/push require a further approval boundary and applicable restrictions
-check. Existing LICENSE remains byte-identical to the approved GPL resource.
-Repository-local core.filemode=false; no active hooks/custom hooks path or local
-instruction/skill files found. Preserve unrelated branches and changes.
+## CLI contract
+
+- `bash bin/run.sh --help` documents defaults, examples, accepted modes, and exit statuses.
+- Accept one profile via `-p`/`--profile`, or one positional argument. Preserve spaces; use `--` before a profile beginning with a dash. Duplicate profiles and extra positional arguments are usage errors.
+- Long value options accept both `--name=value` and `--name value`; short options take a separate value. Bundled short flags and abbreviated option names are unsupported.
+- Modes: `diff` (default), `apply`, and the existing apply aliases `set`/`deploy`.
+- Exit 0 for help or successful execution, including ordinary differences; 2 for usage errors; 1 for operational failures. Dependency checks precede secrets loading; help bypasses dependency checks.
+## Licensing and branch state
+
+Original material is GPL-3.0-only; preserve existing grants, README, LICENSE and
+source notices. Strict JSON files remain comment-free under the README grant.
+The existing LICENSE matches the approved GPL resource verbatim.
+
+On October 18, 2026 the separately approved main licensing milestone was published
+as 2fb4742. This feature was explicitly authorized for a local rebase onto main;
+its behavior and isolated tests remain in scope here, not on main. Feature
+force-push/publication remains separately gated. Preserve unrelated branches.
+Verified WSL Bash 5.2.21, Git 2.43.0 and jq 1.7; extension-host version remains
+unverified. Repository-local core.filemode=false; no active hooks were found.
