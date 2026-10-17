@@ -1,9 +1,15 @@
 #!/usr/bin/env bash
 
+#
+# Edited partially by gpt-6.1-sol
+# Last updated: 2026-10-16
+#
+
 # Copyright (C) 2026 Thomas Sloman (Syntavian)
 # SPDX-License-Identifier: GPL-3.0-only
 # Licensed under the GNU General Public License, version 3 only.
 # See the repository LICENSE for the full terms.
+
 # Sourced platform/path helpers; leave shell options and exit policy to the caller.
 
 # Print win, mac, or linux from OSTYPE; return 1 for unsupported platforms.

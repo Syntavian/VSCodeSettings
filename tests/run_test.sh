@@ -1,4 +1,10 @@
 #!/usr/bin/env bash
+
+#
+# Generated wholly by gpt-6.1-sol
+# Last updated: 2026-10-16
+#
+
 # Exercise the CLI in disposable fixtures, never against live editor settings.
 
 set -Eeuo pipefail
