@@ -1,11 +1,9 @@
 #!/usr/bin/env bash
 
-#
+# Test platform/path helpers using mocks, without reading live editor settings.
+
 # Generated wholly by gpt-6.1-sol
 # Last updated: 2026-10-16
-#
-
-# Test platform/path helpers using mocks, without reading live editor settings.
 
 set -Eeuo pipefail
 

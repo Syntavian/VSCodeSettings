@@ -1,11 +1,9 @@
 #!/usr/bin/env bash
 
-#
+# Merge VS Code configuration with a local profile, then compare or apply it.
+
 # Edited partially by gpt-6.1-sol
 # Last updated: 2026-10-16
-#
-
-# Merge VS Code configuration with a local profile, then compare or apply it.
 
 # Copyright (C) 2025, 2026 Thomas Sloman (Syntavian)
 # SPDX-License-Identifier: GPL-3.0-only
