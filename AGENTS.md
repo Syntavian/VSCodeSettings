@@ -37,6 +37,7 @@ Syntax/help checks and isolated tests passed. Tests cover target selection, libr
 - Long value options accept both `--name=value` and `--name value`; short options take a separate value. Bundled short flags and abbreviated option names are unsupported.
 - Modes: `diff` (default), `apply`, and the existing apply aliases `set`/`deploy`.
 - Exit 0 for help or successful execution, including ordinary differences; 2 for usage errors; 1 for operational failures. Dependency checks precede secrets loading; help bypasses dependency checks.
+
 ## Licensing and branch state
 
 Original material is GPL-3.0-only; preserve existing grants, README, LICENSE and
