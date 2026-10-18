@@ -1,5 +1,10 @@
 #!/usr/bin/env bash
 
+# Copyright (C) 2026 Thomas Sloman (Syntavian)
+# SPDX-License-Identifier: GPL-3.0-only
+# Licensed under the GNU General Public License, version 3 only.
+# See the repository LICENSE for the full terms.
+
 function get_os() {
     if [[ "$OSTYPE" == "cygwin" || "$OSTYPE" == "msys" ]]; then
         echo "win"

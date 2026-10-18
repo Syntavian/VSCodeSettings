@@ -1,5 +1,10 @@
 #!/usr/bin/env bash
 
+# Copyright (C) 2025, 2026 Thomas Sloman (Syntavian)
+# SPDX-License-Identifier: GPL-3.0-only
+# Licensed under the GNU General Public License, version 3 only.
+# See the repository LICENSE for the full terms.
+
 set -Eeuo pipefail
 
 script_dir=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
